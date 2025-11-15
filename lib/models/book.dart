@@ -7,7 +7,7 @@ class Book {
   final String imagePath;
 
   // New fields for details
-  final double rating;        // 0–5
+  final double rating;
   final String description;   // long text
 
   const Book({
