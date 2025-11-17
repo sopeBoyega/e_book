@@ -13,10 +13,7 @@ class EBookApp extends StatelessWidget {
     return MaterialApp(
       title: 'E-Book Store',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-      ),
+      theme: ThemeData(useMaterial3: true, fontFamily: 'Roboto'),
       home: const MainShell(),
     );
   }

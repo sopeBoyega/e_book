@@ -30,9 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openBookDetails(Book book) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => BookDetailScreen(book: book),
-      ),
+      MaterialPageRoute(builder: (_) => BookDetailScreen(book: book)),
     );
   }
 
@@ -86,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
   // ---------------- TOP BAR ----------------
 
   Widget _buildTopBar() {
@@ -95,10 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         const Text(
           'Happy Reading!',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         Container(
           decoration: BoxDecoration(
@@ -117,10 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-      ),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
     );
   }
 
