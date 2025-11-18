@@ -3,7 +3,7 @@ class Book {
   final String title;
   final String author;
   final String category;
-  final String price; // keep as String for now
+  final double price; // keep as String for now
   final String imagePath;
 
   // New fields for details

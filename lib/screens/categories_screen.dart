@@ -53,7 +53,7 @@ class CategoriesScreen extends StatelessWidget {
         title: 'The Ultimate Anxiety Free Collection',
         author: '',
         category: 'Non-fiction',
-        price: '15.00',
+        price: 15.00,
         imagePath: 'assets/images/book6.png',
         rating: 4.3,
         description: """
@@ -69,7 +69,7 @@ The tone stays gentle and practical, making it a good companion for busy days, l
         title: 'The Picture of Dorian Gray',
         author: 'Oscar Wilde',
         category: 'Classics',
-        price: '25.00',
+        price: 25.00,
         imagePath: 'assets/images/book3.png',
         rating: 4.11,
         description: """
@@ -83,7 +83,7 @@ Wilde mixes gothic atmosphere with sharp social commentary, creating a classic t
         title: 'The Catcher in the Rye',
         author: 'J.D. Salinger',
         category: 'Classics',
-        price: '30.00',
+        price: 30.00,
         imagePath: 'assets/images/book4.png',
         rating: 3.9,
         description: """
@@ -99,7 +99,7 @@ The novel explores grief, loneliness, and the awkward space between teenager and
         title: 'Zodiac Academy',
         author: 'Caroline Peckham',
         category: 'Fantasy',
-        price: '29.00',
+        price: 29.00,
         imagePath: 'assets/images/book4.png',
         rating: 4.4,
         description: """
@@ -113,7 +113,7 @@ Expect cutthroat classes, elemental magic, and rivalries that blur into complica
         title: 'Sorrow and Starlight',
         author: 'Caroline Peckham, Susanne Valenti',
         category: 'Fantasy',
-        price: '30.00',
+        price: 30.00,
         imagePath: 'assets/images/book6.png',
         rating: 4.5,
         description: """
@@ -127,7 +127,7 @@ It is a strong pick if you enjoy sweeping series with big battles, high emotion,
         title: 'Queen of Myth and Monsters',
         author: 'Scarlett St. Clair',
         category: 'Fantasy',
-        price: '28.00',
+        price: 28.00,
         imagePath: 'assets/images/book7.png',
         rating: 4.2,
         description: """
@@ -143,7 +143,7 @@ Readers who like myth-inspired worlds and powerful, morally complex leads will f
         title: 'Nine Liars',
         author: 'Maureen Johnson',
         category: 'Young adult',
-        price: '16.00',
+        price: 16.00,
         imagePath: 'assets/images/book5.png',
         rating: 4.0,
         description: """
@@ -157,7 +157,7 @@ Teen detective Stevie Bell visits England and starts asking the questions no one
         title: 'Sunsets with Annie',
         author: 'Mindset',
         category: 'Young adult',
-        price: '33.00',
+        price: 33.00,
         imagePath: 'assets/images/book5.png',
         rating: 4.2,
         description: """
@@ -173,7 +173,7 @@ It is a cozy, reflective story about friendship, gentle romance, and choosing jo
         title: 'Nine Liars',
         author: 'Maureen Johnson',
         category: 'Crime',
-        price: '20.00',
+        price: 20.00,
         imagePath: 'assets/images/book3.png',
         rating: 4.0,
         description: """
@@ -189,7 +189,7 @@ The book blends cold-case investigation with modern campus life, giving crime re
         title: 'Dark Corners',
         author: 'E. L. Marrow',
         category: 'Horror',
-        price: '18.00',
+        price: 18.00,
         imagePath: 'assets/images/book3.png',
         rating: 4.1,
         description: """
@@ -205,7 +205,7 @@ This is for readers who like slow-building dread, creaking floors, and hauntings
         title: 'Stars Beyond Atlas',
         author: 'J. K. Rowan',
         category: 'Sci-fi',
-        price: '24.00',
+        price: 24.00,
         imagePath: 'assets/images/book7.png',
         rating: 4.0,
         description: """
@@ -221,7 +221,7 @@ As systems glitch and loyalties fracture, the crew must decide what parts of the
         title: 'Stage Lights',
         author: 'Amelia Cross',
         category: 'Drama',
-        price: '21.00',
+        price: 21.00,
         imagePath: 'assets/images/book5.png',
         rating: 4.1,
         description: """
@@ -574,7 +574,7 @@ class CategoryBooksScreen extends StatelessWidget {
         )
             : ListView.separated(
           itemCount: books.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          separatorBuilder: (_, _) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final book = books[index];
             return GestureDetector(

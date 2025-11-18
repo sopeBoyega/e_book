@@ -92,7 +92,7 @@ class _BestDealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double originalPrice = double.tryParse(book.price) ?? 0;
+    final double originalPrice = book.price;
     final bool hasValidPrice = originalPrice > 0;
     final double discountedPrice = originalPrice * 0.88; // 12% off
 

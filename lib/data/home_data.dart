@@ -8,7 +8,7 @@ class HomeData {
       title: 'Sunsets with Annie',
       author: 'Mindset',
       category: 'Novel',
-      price: '33.00',
+      price: 33.00,
       imagePath: 'assets/images/book5.png',
       rating: 4.2,
       description: """
@@ -21,7 +21,7 @@ The story follows her as she learns to step outside her comfort zone, confront o
       title: 'Zodiac Academy',
       author: 'Caroline Peckham',
       category: 'Fantasy',
-      price: '29.00',
+      price: 29.00,
       imagePath: 'assets/images/book4.png',
       rating: 4.4,
       description: """
@@ -34,7 +34,7 @@ Two siblings arrive and discover that the throne they never knew about is now th
       title: 'The Picture of Dorian Gray',
       author: 'Oscar Wilde',
       category: 'Fiction',
-      price: '23.00',
+      price: 23.00,
       imagePath: 'assets/images/book1.jpg',
       rating: 4.11,
       description: """
@@ -47,7 +47,7 @@ Wilde weaves a gothic tale about vanity, influence, and the cost of chasing ever
       title: 'Nine Liars',
       author: 'Maureen Johnson',
       category: 'Mystery',
-      price: '20.00',
+      price: 20.00,
       imagePath: 'assets/images/book3.png',
       rating: 4.0,
       description: """
@@ -60,7 +60,7 @@ When teen detective Stevie Bell visits England, she is drawn into the old case a
       title: 'The Ultimate Anxiety Free Collection',
       author: '',
       category: 'Non-fiction',
-      price: '15.00',
+      price: 15.00,
       imagePath: 'assets/images/book6.png',
       rating: 4.3,
       description: """
@@ -77,7 +77,7 @@ You will find breathing exercises, grounding techniques, and journal prompts tha
       title: 'The Picture of Dorian Gray',
       author: 'Oscar Wilde',
       category: 'Classics',
-      price: '25.00',
+      price: 25.00,
       imagePath: 'assets/images/book3.png',
       rating: 4.11,
       description: """
@@ -90,7 +90,7 @@ Wilde mixes dark humor with social criticism, questioning what society praises a
       title: 'The Catcher in the Rye',
       author: 'J.D. Salinger',
       category: 'Classics',
-      price: '30.00',
+      price: 30.00,
       imagePath: 'assets/images/book4.png',
       rating: 3.9,
       description: """
@@ -103,7 +103,7 @@ The book looks at grief, loneliness, and the strange moment between being a teen
       title: 'Zodiac Academy',
       author: 'Caroline Peckham',
       category: 'Fantasy',
-      price: '29.00',
+      price: 29.00,
       imagePath: 'assets/images/book4.png',
       rating: 4.4,
       description: """
@@ -116,7 +116,7 @@ It is ideal for readers who enjoy academy fantasy, elemental powers, and rivalri
       title: 'Sunsets with Annie',
       author: 'Mindset',
       category: 'Novel',
-      price: '33.00',
+      price: 33.00,
       imagePath: 'assets/images/book5.png',
       rating: 4.2,
       description: """
@@ -133,7 +133,7 @@ This one suits readers who enjoy soft, reflective contemporary stories with cozy
       title: 'Sorrow and Starlight',
       author: 'Caroline Peckham, Susanne Valenti',
       category: 'Fantasy',
-      price: '30.00',
+      price: 30.00,
       imagePath: 'assets/images/book6.png',
       rating: 4.5,
       description: """
@@ -146,7 +146,7 @@ Expect sweeping battles, emotional confrontations, and quieter moments where fou
       title: 'Queen of Myth and Monsters',
       author: 'Scarlett St. Clair',
       category: 'Fantasy',
-      price: '28.00',
+      price: 28.00,
       imagePath: 'assets/images/book7.png',
       rating: 4.2,
       description: """
@@ -159,7 +159,7 @@ Readers who enjoy lush fantasy settings and morally complex leads will find plen
       title: 'The Ultimate Anxiety Free Collection',
       author: '',
       category: 'Non-fiction',
-      price: '15.00',
+      price: 15.00,
       imagePath: 'assets/images/book6.png',
       rating: 4.3,
       description: """
@@ -176,7 +176,7 @@ It works well as a bedside or bag companion for readers who want small reminders
       title: 'Nine Liars',
       author: 'Maureen Johnson',
       category: 'Mystery',
-      price: '20.00',
+      price: 20.00,
       imagePath: 'assets/images/book3.png',
       rating: 4.0,
       description: """
@@ -189,7 +189,7 @@ It is witty, twisty, and perfect if you like amateur sleuths digging into decade
       title: 'Stars Beyond Atlas',
       author: 'J. K. Rowan',
       category: 'Sci-fi',
-      price: '24.00',
+      price: 24.00,
       imagePath: 'assets/images/book7.png',
       rating: 4.0,
       description: """
@@ -202,7 +202,7 @@ Space opera fans who enjoy questions about memory, identity, and trust in techno
       title: 'Stage Lights',
       author: 'Amelia Cross',
       category: 'Drama',
-      price: '21.00',
+      price: 21.00,
       imagePath: 'assets/images/book5.png',
       rating: 4.1,
       description: """
@@ -219,7 +219,7 @@ Backstage friendships, quiet rivalries, and opening-night nerves make this a war
       title: 'Nine Liars',
       author: 'Maureen Johnson',
       category: 'Young adult',
-      price: '16.00',
+      price: 16.00,
       imagePath: 'assets/images/book5.png',
       rating: 4.0,
       description: """
@@ -232,7 +232,7 @@ As Stevie interviews them one by one, she spots gaps, nervous jokes, and details
       title: 'Sorrow and Starlight',
       author: 'Caroline Peckham, Susanne Valenti',
       category: 'Fantasy',
-      price: '30.00',
+      price: 30.00,
       imagePath: 'assets/images/book6.png',
       rating: 4.5,
       description: """
@@ -245,7 +245,7 @@ Expect emotional confrontations, big magical set pieces, and quiet scenes where 
       title: 'Sunsets with Annie',
       author: 'Mindset',
       category: 'Young adult',
-      price: '33.00',
+      price: 33.00,
       imagePath: 'assets/images/book5.png',
       rating: 4.2,
       description: """
@@ -258,7 +258,7 @@ It is a comforting, reflective read if you enjoy stories about finding community
       title: 'The Ultimate Anxiety Free Collection',
       author: '',
       category: 'Non-fiction',
-      price: '15.00',
+      price: 15.00,
       imagePath: 'assets/images/book6.png',
       rating: 4.3,
       description: """
@@ -275,7 +275,7 @@ It works nicely for readers who keep a book close for reassurance on busy, stres
       title: 'Queen of Myth and Monsters',
       author: 'Scarlett St. Clair',
       category: 'Fantasy',
-      price: '28.00',
+      price: 28.00,
       imagePath: 'assets/images/book7.png',
       rating: 4.2,
       description: """
@@ -288,7 +288,7 @@ It balances intense romance, divine magic, and court intrigue for readers who li
       title: 'Sorrow and Starlight',
       author: 'Caroline Peckham, Susanne Valenti',
       category: 'Fantasy',
-      price: '30.00',
+      price: 30.00,
       imagePath: 'assets/images/book6.png',
       rating: 4.5,
       description: """
@@ -301,7 +301,7 @@ It is a good fit if you want a fantasy that balances drama, humor, and big feeli
       title: 'Stars Beyond Atlas',
       author: 'J. K. Rowan',
       category: 'Sci-fi',
-      price: '24.00',
+      price: 24.00,
       imagePath: 'assets/images/book7.png',
       rating: 4.0,
       description: """
@@ -314,7 +314,7 @@ Great for readers who enjoy space mysteries with psychological tension and ethic
       title: 'Stage Lights',
       author: 'Amelia Cross',
       category: 'Drama',
-      price: '21.00',
+      price: 21.00,
       imagePath: 'assets/images/book5.png',
       rating: 4.1,
       description: """
