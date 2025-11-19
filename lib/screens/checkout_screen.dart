@@ -34,9 +34,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   ];
 
   final Map<String, List<String>> cities = {
-    'Abuja FCT': ['Garki','Wuse','Maitama','Asokoro','Kubwa','Jabi'],
-    'Lagos': ['Ikeja','Lekki','Victoria Island','Yaba','Surulere','Ikoyi','Ajah'],
-    'Rivers': ['Port Harcourt','Obio-Akpor','Eleme'],
+    'Abuja FCT': ['Garki', 'Wuse', 'Maitama', 'Asokoro', 'Kubwa', 'Jabi', 'Gwagwalada', 'Lugbe', 'Durumi', 'Utako'],
+    'Lagos': ['Ikeja', 'Lekki', 'Victoria Island', 'Yaba', 'Surulere', 'Ajah', 'Ikoyi', 'Magodo', 'Ogba', 'Agege', 'Alimosho', 'Apapa', 'Ikorodu', 'Badagry', 'Epe'],
+    'Rivers': ['Port Harcourt', 'Obio-Akpor', 'Eleme', 'Oyigbo', 'Okrika', 'Etche', 'Ikwerre', 'Emohua', 'Khana'],
+    'Oyo': ['Ibadan', 'Ogbomosho', 'Iseyin', 'Oyo Town', 'Saki', 'Igboho', 'Kisi', 'Eruwa', 'Igangan'],
+    'Kano': ['Kano Municipal', 'Fagge', 'Dala', 'Gwale', 'Tarauni', 'Nassarawa', 'Kumbotso', 'Ungogo', 'Dawakin Tofa'],
+    'Kaduna': ['Kaduna North', 'Kaduna South', 'Zaria', 'Sabon Gari', 'Chikun', 'Kajuru', 'Giwa', 'Birnin Gwari'],
+    'Anambra': ['Awka', 'Onitsha', 'Nnewi', 'Ihiala', 'Aguata', 'Idemili North', 'Idemili South', 'Ogbaru', 'Orumba North'],
+    'Enugu': ['Enugu North', 'Enugu South', 'Nsukka', 'Udi', 'Nkanu West', 'Uzo Uwani', 'Ezeagu', 'Igbo Etiti'],
+    'Imo': ['Owerri Municipal', 'Owerri West', 'Owerri North', 'Okigwe', 'Orlu', 'Ideato North', 'Mbaitoli', 'Ngor Okpala'],
+    'Delta': ['Asaba', 'Warri', 'Sapele', 'Ughelli', 'Agbor', 'Oleh', 'Ozoro', 'Kwale', 'Abraka'],
+    'Ogun': ['Abeokuta North', 'Abeokuta South', 'Ijebu Ode', 'Sagamu', 'Ifo', 'Ota', 'Ado-Odo/Ota', 'Yewa South'],
+    'Ondo': ['Akure', 'Ondo Town', 'Owo', 'Ikare-Akoko', 'Okitipupa', 'Ore', 'Idanre', 'Igbokoda'],
+    'Osun': ['Osogbo', 'Ile-Ife', 'Ilesa', 'Ede', 'Ikire', 'Iwo', 'Ejigbo', 'Ila Orangun'],
+    'Edo': ['Benin City', 'Ekpoma', 'Auchi', 'Uromi', 'Okada', 'Irrua', 'Fugar', 'Agenebode'],
+    'Akwa Ibom': ['Uyo', 'Eket', 'Ikot Ekpene', 'Abak', 'Oron', 'Ikot Abasi', 'Etinan', 'Ukanafun'],
+    'Cross River': ['Calabar', 'Ogoja', 'Ikom', 'Obudu', 'Ugep', 'Akamkpa', 'Obubra', 'Bakassi'],
+    'Bayelsa': ['Yenagoa', 'Sagbama', 'Ogbia', 'Nembe', 'Brass', 'Ekeremor', 'Kolokuma/Opokuma', 'Southern Ijaw'],
+    'Plateau': ['Jos', 'Bukuru', 'Pankshin', 'Shendam', 'Barkin Ladi', 'Mangu', 'Bokkos', 'Wase'],
+    'Katsina': ['Katsina', 'Funtua', 'Daura', 'Malumfashi', 'Dutsin-Ma', 'Kankia', 'Bakori', 'Batagarawa'],
+    'Sokoto': ['Sokoto', 'Tambuwal', 'Illela', 'Gwadabawa', 'Yabo', 'Binji', 'Wurno', 'Rabah'],
   };
 
   @override
