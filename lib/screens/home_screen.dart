@@ -1,3 +1,4 @@
+import 'package:e_book/widgets/book_card.dart';
 import 'package:flutter/material.dart';
 import '../data/home_data.dart';
 import '../models/book.dart';

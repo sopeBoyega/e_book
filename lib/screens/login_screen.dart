@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book/screens/admin/admin_books_screen.dart';
 import 'package:e_book/screens/home_screen.dart';
 import 'package:e_book/screens/main_shell.dart';
 import 'package:e_book/screens/register_screen.dart';
@@ -46,7 +47,22 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _usernameCtrl.text,
         password: _passCtrl.text,
       );
-      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => MainShell()));
+
+      
+    final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredentials.user!.uid)
+          .get();
+
+      final role = snapshot.data()?['role'] ?? 'user';
+
+      if (role == "admin"){
+         Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AdminBooksScreen()));
+      }
+      else {
+         Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => MainShell()));
+      }
+     
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -65,12 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return;
   }
 
-  // final snapshot = await FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc(cred.user!.uid)
-  //         .get();
-
-  //     final role = snapshot.data()?['role'] ?? 'user';
 
 
   void _showForgotPasswordDialog() {
