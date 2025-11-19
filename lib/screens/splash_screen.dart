@@ -1,3 +1,4 @@
+import 'package:e_book/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,8 +13,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      context.go('/onboarding');
+    Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => LoginScreen()));
     });
   }
 
