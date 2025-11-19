@@ -11,11 +11,12 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  int _currentStep = 0;
+  int _currentStep = 0; // 0 = Shipping, 1 = Payment, 2 = Success
 
   final _shippingFormKey = GlobalKey<FormState>();
   final _paymentFormKey = GlobalKey<FormState>();
 
+  // Shipping
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
@@ -23,6 +24,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String? _selectedProvince;
   String? _selectedCity;
 
+  // Payment
   final _cardHolderController = TextEditingController();
   final _cardNumberController = TextEditingController();
   final _expiryController = TextEditingController();
@@ -64,22 +66,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (_currentStep == 2) {
       return Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, automaticallyImplyLeading: false,
-          actions: [IconButton(icon: const Icon(Icons.close), onPressed: () {
-            cart.clear();
-            Navigator.popUntil(context, (route) => route.isFirst);
-          })],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.black),
+              onPressed: () {
+                cart.clear();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
+          ],
         ),
-        body: Center(
+        body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(padding: const EdgeInsets.all(32), decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
-                child: const Icon(Icons.check, color: Colors.white, size: 100)),
-              const SizedBox(height: 40),
-              const Text('Payment Successful!', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              Text('Total Paid: ${cart.totalFormatted}', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Icon(Icons.check, color: Colors.black, size: 120),
+              SizedBox(height: 32),
+              Text('Payment received!', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              SizedBox(height: 16),
+              Text('Your order has been validated.', style: TextStyle(fontSize: 18, color: Colors.black54)),
             ],
           ),
         ),
@@ -89,52 +98,70 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        title: const Text('Checkout', style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: const BackButton(color: Colors.black),
+      title: const Text('Checkout', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+      centerTitle: true,
+      actions: [
+      IconButton(
+      icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black, size: 28),
+      onPressed: () {
+        // This takes user back to Cart Screen
+        Navigator.of(context).pop();
+        },
+          ),  
+          const SizedBox(width: 8), // nice spacing
+        ],  
       ),
       body: Column(
         children: [
-          // Order Summary
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            color: Colors.grey[50],
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Order Summary', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              _row('Subtotal', cart.subtotalFormatted),
-              _row('Shipping', cart.shippingFormatted),
-              const Divider(),
-              _row('Total', cart.totalFormatted, bold: true),
-            ]),
+          // Progress Indicator
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _stepIcon(Icons.local_shipping, _currentStep >= 0),
+                _line(_currentStep >= 1),
+                _stepIcon(Icons.credit_card, _currentStep >= 1),
+                _line(false),
+                _stepIcon(Icons.done, false),
+              ],
+            ),
           ),
 
-          Expanded(child: _currentStep == 0 ? _shippingForm() : _paymentForm()),
+          // Title
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              _currentStep == 0 ? 'Enter Shipping Details' : 'Select a Payment Method',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 32),
 
-          // Bottom Button
+          Expanded(
+            child: _currentStep == 0 ? _buildShippingForm() : _buildPaymentForm(),
+          ),
+
+          // Confirm Button
           Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]),
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -5))],
+            ),
             child: ElevatedButton(
-              onPressed: () {
-                if (_currentStep == 0) {
-                  if (_shippingFormKey.currentState!.validate() && _selectedProvince != null && _selectedCity != null) {
-                    setState(() => _currentStep = 1);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fill all fields'), backgroundColor: Colors.red));
-                  }
-                } else {
-                  if (_paymentFormKey.currentState!.validate()) {
-                    setState(() => _currentStep = 2);
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.black, padding: const EdgeInsets.symmetric(vertical: 20), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
-              child: Text(_currentStep == 0 ? 'Continue to Payment' : 'Pay ${cart.totalFormatted}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              onPressed: _confirmPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                elevation: 8,
+              ),
+              child: const Text('Confirm', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
             ),
           ),
         ],
@@ -142,88 +169,147 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _row(String label, String value, {bool bold = false}) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(label, style: TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.w500)),
-      Text(value, style: TextStyle(fontSize: bold ? 22 : 18, fontWeight: FontWeight.bold)),
-    ]),
-  );
-
-  Widget _shippingForm() => Form(
-    key: _shippingFormKey,
-    child: ListView(padding: const EdgeInsets.all(20), children: [
-      const Text('Shipping Address', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      const SizedBox(height: 20),
-      _field(_nameController, 'Full Name *'),
-      _field(_phoneController, 'Phone Number *', prefix: '+234 '),
-      DropdownButtonFormField<String>(
-  initialValue: _selectedProvince,
-  decoration: _dec('State / Province *'),
-  items: provinces.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-  onChanged: (v) => setState(() {
-    _selectedProvince = v;
-    _selectedCity = null;
-  }),
-  validator: (v) => v == null ? 'Required' : null,
-),
-      const SizedBox(height: 16),
-      DropdownButtonFormField<String>(
-        initialValue: _selectedCity,
-        decoration: _dec('City *'),
-        items: _selectedProvince == null ? [] : cities[_selectedProvince]!.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-        onChanged: _selectedProvince != null ? (v) => setState(() => _selectedCity = v) : null,
-        validator: (v) => v == null ? 'Required' : null,
-      ),
-      const SizedBox(height: 16),
-      _field(_addressController, 'Street Address *'),
-      _field(_postalController, 'Postal Code *', keyboard: TextInputType.number),
-      const SizedBox(height: 40),
-    ]),
-  );
-
-  Widget _paymentForm() => Form(
-    key: _paymentFormKey,
-    child: ListView(padding: const EdgeInsets.all(20), children: [
-      const Text('Payment Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      const SizedBox(height: 30),
-      _field(_cardHolderController, 'Cardholder Name *'),
-      _field(_cardNumberController, 'Card Number *', hint: '1234 5678 9012 3456', keyboard: TextInputType.number),
-      Row(children: [
-        Expanded(child: _field(_expiryController, 'MM/YY *')),
-        const SizedBox(width: 16),
-        Expanded(child: _field(_cvvController, 'CVV *', keyboard: TextInputType.number)),
-      ]),
-      const SizedBox(height: 60),
-    ]),
-  );
-
-  Widget _field(TextEditingController c, String label, {String? hint, String? prefix, TextInputType? keyboard}) => Padding(
-  padding: const EdgeInsets.only(bottom: 16),
-  child: TextFormField(
-    controller: c,
-    keyboardType: keyboard,
-    decoration: InputDecoration(
-      labelText: label,
-      hintText:hint,
-      prefixText: prefix,
-      filled: true,
-      fillColor: Colors.grey[50],
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-    ),
-    validator: (value) {
-      if (value == null || value.trim().isEmpty) {
-        return 'Required';
+  void _confirmPressed() {
+    if (_currentStep == 0) {
+      if (_shippingFormKey.currentState!.validate() && _selectedProvince != null && _selectedCity != null) {
+        setState(() => _currentStep = 1);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all fields'), backgroundColor: Colors.red),
+        );
       }
-      return null;
-    },
-  ),
-);
+    } else {
+      if (_paymentFormKey.currentState!.validate()) {
+        setState(() => _currentStep = 2);
+      }
+    }
+  }
 
-  InputDecoration _dec(String label) => InputDecoration(
-    labelText: label,
-    filled: true,
-    fillColor: Colors.grey[50],
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-  );
+  Widget _stepIcon(IconData icon, bool active) => Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: active ? Colors.black : Colors.grey[300],
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: active ? Colors.white : Colors.grey[600], size: 28),
+      );
+
+  Widget _line(bool active) => Container(width: 60, height: 2, color: active ? Colors.black : Colors.grey[300]);
+
+  // SHIPPING FORM — PERFECT SPACING
+  Widget _buildShippingForm() => Form(
+        key: _shippingFormKey,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          children: [
+            const SizedBox(height: 20),
+            buildLabeledField('Full Name *', _nameController, 'Enter full name'),
+            buildLabeledField('Phone Number *', _phoneController, 'Enter phone number', prefix: '+234 '),
+            buildLabeledDropdown('Select Province', provinces, _selectedProvince, (v) {
+              setState(() {
+                _selectedProvince = v;
+                _selectedCity = null;
+              });
+            }),
+            buildLabeledDropdown('Select City', _selectedProvince == null ? [] : cities[_selectedProvince]!, _selectedCity, (v) => setState(() => _selectedCity = v)),
+            buildLabeledField('Street Address *', _addressController, 'Enter street address'),
+            buildLabeledField('Postal Code *', _postalController, 'Enter postal code', keyboard: TextInputType.number),
+            const SizedBox(height: 60),
+          ],
+        ),
+      );
+
+  // PAYMENT FORM — SAME PERFECT SPACING
+  Widget _buildPaymentForm() => Form(
+        key: _paymentFormKey,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          children: [
+            const SizedBox(height: 20),
+
+            // Credit Card Only
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black, width: 2),
+              ),
+              child: Row(
+                children: [
+                  Image.asset('assets/images/mastercard.png', width: 60, height: 40),
+                  const SizedBox(width: 16),
+                  const Text('Credit Card', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                  const Spacer(),
+                  const Icon(Icons.check_circle, color: Colors.black, size: 32),
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            buildLabeledField('Card Holder Name', _cardHolderController, 'Enter card holder name'),
+            buildLabeledField('Card Number', _cardNumberController, '4111 1111 1111 1111', keyboard: TextInputType.number),
+            Row(
+              children: [
+                Expanded(child: buildLabeledField('Expiry Date', _expiryController, 'MM/YY')),
+                const SizedBox(width: 16),
+                Expanded(child: buildLabeledField('CVV', _cvvController, '123', keyboard: TextInputType.number)),
+              ],
+            ),
+            const SizedBox(height: 80),
+          ],
+        ),
+      );
+
+  // PERFECT FIELD WITH SPACING
+  Widget buildLabeledField(String label, TextEditingController controller, String hint, {String? prefix, TextInputType? keyboard}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboard,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.black38),
+            prefixText: prefix,
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+          ),
+          validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+        ),
+        const SizedBox(height: 28),
+      ],
+    );
+  }
+
+  // PERFECT DROPDOWN WITH SPACING
+    Widget buildLabeledDropdown(String label, List<String> items, String? value, Function(String?) onChanged) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 28), // ← THIS FORCES THE GAP 100%
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87)),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            initialValue: value,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey[100],
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            ),
+            items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+            onChanged: onChanged,
+            validator: (v) => v == null ? 'Required' : null,
+          ),
+        ],
+      ),
+    );
+  }
 }
