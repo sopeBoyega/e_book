@@ -20,4 +20,18 @@ class Book {
     this.rating = 0.0,
     this.description = '',
   });
+
+
+  //  factory Book.fromMap(String id, Map<String, dynamic> map) {
+  //   return Book(
+  //     id: id,
+  //     title: map['title'] ?? '',
+  //     author: map['author'] ?? '',
+  //     price: (map['price'] ?? 0) is int ? map['price'] : int.tryParse(map['price'].toString()) ?? 0,
+  //     imageUrl: map['imageUrl'],
+  //     description: map['description'],
+  //   );
+  // }
+
+
 }
