@@ -76,9 +76,9 @@ You will find breathing exercises, grounding techniques, and journal prompts tha
       id: 'top1',
       title: 'The Picture of Dorian Gray',
       author: 'Oscar Wilde',
-      category: 'Classics',
+      category: 'Gothic fiction',
       price: '25.00',
-      imagePath: 'assets/images/book3.png',
+      imagePath: 'assets/images/book1.jpg',
       rating: 4.11,
       description: """
 In this classic, Dorian Gray’s portrait grows older and more twisted as he stays outwardly young. The novel moves between elegant drawing rooms, bohemian studios, and late-night streets where Dorian tests how far he can go without consequences.
@@ -91,7 +91,7 @@ Wilde mixes dark humor with social criticism, questioning what society praises a
       author: 'J.D. Salinger',
       category: 'Classics',
       price: '30.00',
-      imagePath: 'assets/images/book4.png',
+      imagePath: 'assets/images/book2.png',
       rating: 3.9,
       description: """
 Holden Caulfield wanders New York City over a few days, skipping school, avoiding home, and looking for someone who actually feels honest. His voice is sharp, sarcastic, and often softer than he wants you to notice.
@@ -134,7 +134,7 @@ This one suits readers who enjoy soft, reflective contemporary stories with cozy
       author: 'Caroline Peckham, Susanne Valenti',
       category: 'Fantasy',
       price: '30.00',
-      imagePath: 'assets/images/book6.png',
+      imagePath: 'assets/images/book10.png',
       rating: 4.5,
       description: """
 This installment brings together years of slow-building tension, tangled prophecies, and shifting loyalties. War finally crashes into the characters’ lives, forcing them to choose what and who they are willing to fight for.
@@ -147,7 +147,7 @@ Expect sweeping battles, emotional confrontations, and quieter moments where fou
       author: 'Scarlett St. Clair',
       category: 'Fantasy',
       price: '28.00',
-      imagePath: 'assets/images/book7.png',
+      imagePath: 'assets/images/book11.jpg',
       rating: 4.2,
       description: """
 A queen bound to an ancient prophecy must keep her kingdom safe while navigating gods, monsters, and a complicated royal marriage. Court intrigue mixes with myth-inspired magic and intense romance.
@@ -186,30 +186,29 @@ It is witty, twisty, and perfect if you like amateur sleuths digging into decade
     ),
     Book(
       id: 'ty2',
-      title: 'Stars Beyond Atlas',
-      author: 'J. K. Rowan',
-      category: 'Sci-fi',
+      title: 'Harry Potter and the Philosopher\'s Stone',
+      author: 'J. K. Rowling',
+      category: 'Fantasy',
       price: '24.00',
-      imagePath: 'assets/images/book7.png',
+      imagePath: 'assets/images/book12.jpg',
       rating: 4.0,
       description: """
-A small exploration crew jumps to the edge of mapped space and discovers a station run by an AI that seems to know each of them already. It offers answers, upgrades, and second chances, but the cost keeps shifting.
-
-Space opera fans who enjoy questions about memory, identity, and trust in technology will find a lot to enjoy.""",
+Harry discovers he is a wizard and leaves his ordinary life for Hogwarts School of Witchcraft and Wizardry. As he learns magic with new friends, he uncovers secrets about his past and faces a dark presence that threatens the wizarding world.
+""",
     ),
     Book(
       id: 'ty3',
-      title: 'Stage Lights',
-      author: 'Amelia Cross',
-      category: 'Drama',
+      title: 'Harry Potter and the Deathly Hallows',
+      author: 'J. K. Rowling',
+      category: 'Fantasy',
       price: '21.00',
-      imagePath: 'assets/images/book5.png',
+      imagePath: 'assets/images/book13.jpg',
       rating: 4.1,
       description: """
-A struggling city theatre bets everything on one last production. Actors, crew, and the director juggle day jobs and family pressures while trying to keep their stage alive.
-
-Backstage friendships, quiet rivalries, and opening-night nerves make this a warm, character-focused read.""",
+Harry, Ron, and Hermione hunt down Voldemort’s Horcruxes while the wizarding world crumbles around them. Old mysteries resolve, loyalties are tested, and a final battle decides the future of Hogwarts and everyone Harry cares about.
+""",
     ),
+
   ];
 
   // ---------------- LATEST BOOKS ----------------
@@ -220,7 +219,7 @@ Backstage friendships, quiet rivalries, and opening-night nerves make this a war
       author: 'Maureen Johnson',
       category: 'Young adult',
       price: '16.00',
-      imagePath: 'assets/images/book5.png',
+      imagePath: 'assets/images/book3.png',
       rating: 4.0,
       description: """
 Stevie Bell’s latest case takes her to London, where a decades-old game of hide-and-seek ended in real tragedy. A college friend group once called themselves the Nine, and they have been telling the same version of that night ever since.
@@ -233,7 +232,7 @@ As Stevie interviews them one by one, she spots gaps, nervous jokes, and details
       author: 'Caroline Peckham, Susanne Valenti',
       category: 'Fantasy',
       price: '30.00',
-      imagePath: 'assets/images/book6.png',
+      imagePath: 'assets/images/book10.png',
       rating: 4.5,
       description: """
 This installment brings together years of slow-building tension, tangled prophecies, and shifting loyalties. The main characters stand on the edge of a war that has been hinted at for several books, with kingdoms, families, and soul-deep bonds all at risk.
@@ -276,7 +275,7 @@ It works nicely for readers who keep a book close for reassurance on busy, stres
       author: 'Scarlett St. Clair',
       category: 'Fantasy',
       price: '28.00',
-      imagePath: 'assets/images/book7.png',
+      imagePath: 'assets/images/book11.jpg',
       rating: 4.2,
       description: """
 A queen bound to an ancient prophecy must navigate gods, monsters, and a love story that mixes duty with real feeling. As political tensions rise, every choice she makes echoes through the kingdom.
@@ -289,7 +288,7 @@ It balances intense romance, divine magic, and court intrigue for readers who li
       author: 'Caroline Peckham, Susanne Valenti',
       category: 'Fantasy',
       price: '30.00',
-      imagePath: 'assets/images/book6.png',
+      imagePath: 'assets/images/book10.png',
       rating: 4.5,
       description: """
 Listed here as an upcoming highlight, this book continues a fan-favorite series full of celestial magic and sharp banter. Long-running tensions and promises come due as war draws closer.
@@ -298,29 +297,28 @@ It is a good fit if you want a fantasy that balances drama, humor, and big feeli
     ),
     Book(
       id: 'upcoming3',
-      title: 'Stars Beyond Atlas',
-      author: 'J. K. Rowan',
-      category: 'Sci-fi',
+      title: 'Harry Potter and the Goblet of Fire',
+      author: 'J. K. Rowling',
+      category: 'Fantasy',
       price: '24.00',
-      imagePath: 'assets/images/book7.png',
+      imagePath: 'assets/images/book14.jpg',
       rating: 4.0,
       description: """
-At the edge of mapped space, an unmapped station offers impossible tech and unsettling knowledge about the crew who discovers it. The AI in charge insists it can fix everything, but its idea of help keeps shifting.
+Harry returns to Hogwarts and is unexpectedly chosen to compete in the dangerous Triwizard Tournament. As he faces dragons, underwater trials, and a deadly maze, strange clues point to a larger plot.
 
-Great for readers who enjoy space mysteries with psychological tension and ethical dilemmas.""",
+Perfect for readers who like high-stakes magic, darker twists, and Harry’s world expanding beyond the walls of Hogwarts.""",
     ),
     Book(
-      id: 'upcoming4',
-      title: 'Stage Lights',
-      author: 'Amelia Cross',
-      category: 'Drama',
+      id: 'ty3',
+      title: 'Harry Potter and the Deathly Hallows',
+      author: 'J. K. Rowling',
+      category: 'Fantasy',
       price: '21.00',
-      imagePath: 'assets/images/book5.png',
+      imagePath: 'assets/images/book13.jpg',
       rating: 4.1,
       description: """
-A beloved theatre is one failed production away from closing. The cast and crew pin their hopes on a final show, juggling day jobs, personal drama, and the fear of losing a place that feels like home.
-
-It has strong found-family energy and plenty of behind-the-scenes chaos for drama lovers.""",
+Harry, Ron, and Hermione hunt down Voldemort’s Horcruxes while the wizarding world crumbles around them. Old mysteries resolve, loyalties are tested, and a final battle decides the future of Hogwarts and everyone Harry cares about.
+""",
     ),
   ];
 }
