@@ -1,11 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book/screens/home_screen.dart';
+import 'package:e_book/screens/main_shell.dart';
+import 'package:e_book/screens/register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
-import '../services/miracle_auth.dart';
+import '../services/auth.dart';
 import '../utils/constants.dart';
 import '../utils/validators.dart';
 import '../widgets/custom_text_field.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,19 +28,41 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   String? _error;
 
-  Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    try {
-      await MiracleAuth.login(_usernameCtrl.text, _passCtrl.text);
-      if (!mounted) return;
-      context.go('/home');
-    } catch (e) {
-      setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
-      Fluttertoast.showToast(msg: _error!);
-    } finally {
-      setState(() => _loading = false);
+  void _login() async {
+    final isValid = _formKey.currentState!.validate();
+
+    if (!isValid) {
+      // show error message...
+      return;
     }
+
+    _formKey.currentState!.save();
+
+    try {
+      setState(() {
+        _loading = true;
+      });
+      final userCredentials = await _firebase.signInWithEmailAndPassword(
+        email: _usernameCtrl.text,
+        password: _passCtrl.text,
+      );
+      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => MainShell()));
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? 'Authentication failed')),
+      );
+      setState(() {
+        _loading = false;
+      });
+    }
+    finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+
+    return;
   }
 
   // final snapshot = await FirebaseFirestore.instance
@@ -196,7 +225,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               Center(
                 child: TextButton(
-                  onPressed: () => context.go('/register'),
+                  onPressed:
+                      () => {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (ctx) => RegisterScreen()),
+                        ),
+                      },
                   child: const Text(
                     'New member? Register',
                     style: AppTextStyles.link,

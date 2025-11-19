@@ -1,11 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_book/screens/login_screen.dart';
+import 'package:e_book/screens/main_shell.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
-import '../services/miracle_auth.dart';
+import '../services/auth.dart';
 import '../utils/constants.dart';
 import '../utils/validators.dart';
 import '../widgets/custom_text_field.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,28 +28,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
   String? _error;
 
-  Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_passCtrl.text != _confirmCtrl.text) {
-      Fluttertoast.showToast(msg: 'Passwords do not match');
+   Future<void> _register() async {
+    final isValid = _formKey.currentState!.validate();
+
+    if (!isValid) {
+      // show erro message
       return;
     }
-    setState(() => _loading = true);
+
+    _formKey.currentState!.save();
+
     try {
-      await MiracleAuth.register(
-        _userCtrl.text,
-        _emailCtrl.text,
-        _passCtrl.text,
-      );
-      if (!mounted) return;
-      context.go('/home');
+      final userCredentials = await _firebase.createUserWithEmailAndPassword(
+        email: _emailCtrl.text,
+        password: _passCtrl.text,
+      ); 
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredentials.user!.uid)
+          .set({
+            'username': _userCtrl,
+            'email': _emailCtrl,
+          });
+
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (ctx) => MainShell()));
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
       Fluttertoast.showToast(msg: _error!);
+      print(_error);
     } finally {
       setState(() => _loading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +127,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 Center(
                   child: TextButton(
-                    onPressed: () => context.go('/login'),
+                    onPressed: () => {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => LoginScreen()))
+                    },
                     child: const Text(
                       'Already a member? Sign in',
                       style: AppTextStyles.link,
