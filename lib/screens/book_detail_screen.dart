@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
+import '../widgets/book_reviews_section.dart';
 
 class BookDetailScreen extends StatelessWidget {
   final Book book;
+  final bool isLoggedIn; // wire this to auth later
 
   const BookDetailScreen({
     super.key,
     required this.book,
+    this.isLoggedIn = true,
   });
 
   @override
@@ -45,7 +48,6 @@ class BookDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
               Text(
                 book.title,
                 style: const TextStyle(
@@ -55,11 +57,9 @@ class BookDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Cover + info
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Cover
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: SizedBox(
@@ -72,17 +72,14 @@ class BookDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-
-                  // Info column
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _infoLine(
                           label: 'Author',
-                          value: book.author.isNotEmpty
-                              ? book.author
-                              : 'Unknown',
+                          value:
+                          book.author.isNotEmpty ? book.author : 'Unknown',
                         ),
                         const SizedBox(height: 6),
                         _infoLine(
@@ -96,7 +93,6 @@ class BookDetailScreen extends StatelessWidget {
                             value: '${book.rating.toStringAsFixed(2)}/5',
                           ),
                         const SizedBox(height: 6),
-
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -117,8 +113,6 @@ class BookDetailScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 16),
-
-                        // Add to cart button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -161,6 +155,12 @@ class BookDetailScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+
+              BookReviewsSection(
+                bookId: book.id,
+                isLoggedIn: isLoggedIn,
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -168,7 +168,7 @@ class BookDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoLine({required String label, required String value}) {
+  static Widget _infoLine({required String label, required String value}) {
     return RichText(
       text: TextSpan(
         style: const TextStyle(

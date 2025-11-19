@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import '../models/book.dart';
-import '../widgets/book_card.dart';
-import '../widgets/home_best_deals_carousel.dart';
 import '../data/home_data.dart';
+import '../models/book.dart';
+import '../widgets/home_best_deals_carousel.dart';
+import '../widgets/home_top_bar.dart';
+import '../widgets/home_search_field.dart';
+import '../widgets/home_top_filter_chips.dart';
+import '../widgets/horizontal_book_list.dart';
+import '../widgets/search_results_list.dart';
+import '../widgets/section_title.dart';
 import 'book_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,6 +21,31 @@ class _HomeScreenState extends State<HomeScreen> {
   // 0 = This Week, 1 = This Month, 2 = This Year
   int _selectedTopFilter = 0;
 
+  // -------- SEARCH STATE --------
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.trim();
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // -------- DATA HELPERS --------
+
   List<Book> get _currentTopBooks {
     switch (_selectedTopFilter) {
       case 1:
@@ -27,6 +57,45 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Combine all books on the home screen into one list for searching
+  List<Book> get _allBooks {
+    final Map<String, Book> map = {};
+
+    void addList(List<Book> list) {
+      for (final book in list) {
+        map[book.id] = book;
+      }
+    }
+
+    addList(HomeData.bestDeals);
+    addList(HomeData.topBooksThisWeek);
+    addList(HomeData.topBooksThisMonth);
+    addList(HomeData.topBooksThisYear);
+    addList(HomeData.latestBooks);
+    addList(HomeData.upcomingBooks);
+
+    return map.values.toList();
+  }
+
+  List<Book> get _searchResults {
+    if (_searchQuery.isEmpty) return [];
+
+    final query = _searchQuery.toLowerCase();
+    final allBooks = _allBooks;
+
+    return allBooks.where((book) {
+      final titleMatch = book.title.toLowerCase().contains(query);
+      final authorMatch = book.author.toLowerCase().contains(query);
+      final categoryMatch = book.category.toLowerCase().contains(query);
+      // Treat id as "ISBN no" for this demo
+      final idMatch = book.id.toLowerCase().contains(query);
+
+      return titleMatch || authorMatch || categoryMatch || idMatch;
+    }).toList();
+  }
+
+  // -------- NAVIGATION --------
+
   void _openBookDetails(Book book) {
     Navigator.push(
       context,
@@ -36,8 +105,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // -------- BUILD --------
+
   @override
   Widget build(BuildContext context) {
+    final bool isSearching = _searchQuery.isNotEmpty;
+    final results = _searchResults;
+
     return Container(
       color: const Color(0xFFF2F2F2),
       child: SafeArea(
@@ -48,156 +122,71 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTopBar(),
+                const HomeTopBar(),
+                const SizedBox(height: 16),
+                HomeSearchField(
+                  controller: _searchController,
+                  hasQuery: _searchQuery.isNotEmpty,
+                  onClear: () => _searchController.clear(),
+                ),
                 const SizedBox(height: 24),
 
-                // Best Deals
-                _buildSectionTitle('Best Deals'),
-                const SizedBox(height: 12),
-                HomeBestDealsCarousel(
-                  books: HomeData.bestDeals,
-                  onBookTap: _openBookDetails,
-                ),
-                const SizedBox(height: 32),
+                if (isSearching) ...[
+                  const SectionTitle(title: 'Search results'),
+                  const SizedBox(height: 12),
+                  SearchResultsList(
+                    books: results,
+                    searchQuery: _searchQuery,
+                    onBookTap: _openBookDetails,
+                  ),
+                ] else ...[
+                  // Best Deals
+                  const SectionTitle(title: 'Best Deals'),
+                  const SizedBox(height: 12),
+                  HomeBestDealsCarousel(
+                    books: HomeData.bestDeals,
+                    onBookTap: _openBookDetails,
+                  ),
+                  const SizedBox(height: 32),
 
-                // Top Books with filters
-                _buildSectionTitle('Top Books'),
-                const SizedBox(height: 12),
-                _buildTopFilterChips(),
-                const SizedBox(height: 12),
-                _buildHorizontalBookList(_currentTopBooks),
-                const SizedBox(height: 32),
+                  // Top Books with filters
+                  const SectionTitle(title: 'Top Books'),
+                  const SizedBox(height: 12),
+                  HomeTopFilterChips(
+                    selectedFilter: _selectedTopFilter,
+                    onFilterChanged: (value) {
+                      setState(() => _selectedTopFilter = value);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  HorizontalBookList(
+                    books: _currentTopBooks,
+                    onBookTap: _openBookDetails,
+                  ),
+                  const SizedBox(height: 32),
 
-                // Latest Books
-                _buildSectionTitle('Latest Books'),
-                const SizedBox(height: 12),
-                _buildHorizontalBookList(HomeData.latestBooks),
-                const SizedBox(height: 32),
+                  // Latest Books
+                  const SectionTitle(title: 'Latest Books'),
+                  const SizedBox(height: 12),
+                  HorizontalBookList(
+                    books: HomeData.latestBooks,
+                    onBookTap: _openBookDetails,
+                  ),
+                  const SizedBox(height: 32),
 
-                // Upcoming Books
-                _buildSectionTitle('Upcoming Books'),
-                const SizedBox(height: 12),
-                _buildHorizontalBookList(HomeData.upcomingBooks),
-                const SizedBox(height: 16),
+                  // Upcoming Books
+                  const SectionTitle(title: 'Upcoming Books'),
+                  const SizedBox(height: 12),
+                  HorizontalBookList(
+                    books: HomeData.upcomingBooks,
+                    onBookTap: _openBookDetails,
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // ---------------- TOP BAR ----------------
-
-  Widget _buildTopBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          'Happy Reading!',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(8),
-          child: const Icon(Icons.search, size: 22),
-        ),
-      ],
-    );
-  }
-
-  // ---------------- SECTION TITLE ----------------
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
-
-  // ---------------- TOP FILTER CHIPS ----------------
-
-  Widget _buildTopFilterChips() {
-    return Row(
-      children: [
-        _buildFilterChip(
-          label: 'This Week',
-          selected: _selectedTopFilter == 0,
-          onTap: () {
-            setState(() => _selectedTopFilter = 0);
-          },
-        ),
-        const SizedBox(width: 8),
-        _buildFilterChip(
-          label: 'This Month',
-          selected: _selectedTopFilter == 1,
-          onTap: () {
-            setState(() => _selectedTopFilter = 1);
-          },
-        ),
-        const SizedBox(width: 8),
-        _buildFilterChip(
-          label: 'This Year',
-          selected: _selectedTopFilter == 2,
-          onTap: () {
-            setState(() => _selectedTopFilter = 2);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFilterChip({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? Colors.black : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: selected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ---------------- HORIZONTAL BOOK LIST ----------------
-
-  Widget _buildHorizontalBookList(List<Book> books) {
-    return SizedBox(
-      height: 300,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: books.length,
-        itemBuilder: (context, index) {
-          final book = books[index];
-          return GestureDetector(
-            onTap: () => _openBookDetails(book),
-            child: BookCard(book: book),
-          );
-        },
       ),
     );
   }
