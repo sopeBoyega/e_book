@@ -1,5 +1,9 @@
+// lib/screens/book_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/book.dart';
+import '../providers/cart_provider.dart';
+import 'cart_screen.dart'; // ADD THIS LINE
 
 class BookDetailScreen extends StatelessWidget {
   final Book book;
@@ -17,25 +21,50 @@ class BookDetailScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.black,
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
         title: Text(
           book.category,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            color: Colors.black,
-            onPressed: () {},
+          // CART ICON WITH BADGE + NAVIGATES TO CART SCREEN
+          Consumer<CartProvider>(
+            builder: (context, cart, child) => Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black, size: 28),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CartScreen()),
+                    );
+                  },
+                ),
+                if (cart.itemCount > 0)
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                      child: Text(
+                        '${cart.itemCount}',
+                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(
@@ -45,94 +74,71 @@ class BookDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
               Text(
                 book.title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-              // Cover + info
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Cover
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: SizedBox(
-                      width: 120,
-                      height: 160,
+                  Hero(
+                    tag: 'book-${book.id}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
                         book.imagePath,
+                        width: 130,
+                        height: 190,
                         fit: BoxFit.cover,
+                        errorBuilder: (_, _, stackTrace) => Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.book, size: 60),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-
-                  // Info column
+                  const SizedBox(width: 20),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _infoLine(
-                          label: 'Author',
-                          value: book.author.isNotEmpty
-                              ? book.author
-                              : 'Unknown',
+                        _infoLine('Author', book.author.isNotEmpty ? book.author : 'Unknown Author'),
+                        const SizedBox(height: 8),
+                        _infoLine('Category', book.category),
+                        if (book.rating > 0) ...[
+                          const SizedBox(height: 8),
+                          _infoLine('Rating', '${book.rating.toStringAsFixed(1)} / 5.0'),
+                        ],
+                        const SizedBox(height: 20),
+                        Text(
+                          book.priceFormatted, // DOLLARS — CLEAN & PROFESSIONAL
+                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
                         ),
-                        const SizedBox(height: 6),
-                        _infoLine(
-                          label: 'Category',
-                          value: book.category,
-                        ),
-                        const SizedBox(height: 6),
-                        if (book.rating > 0)
-                          _infoLine(
-                            label: 'Rating',
-                            value: '${book.rating.toStringAsFixed(2)}/5',
-                          ),
-                        const SizedBox(height: 6),
-
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const Text(
-                              'Pricing : ',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              '\$${book.price}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Add to cart button
+                        const SizedBox(height: 24),
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Provider.of<CartProvider>(context, listen: false).add(book);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${book.title} added to cart!'),
+                                  backgroundColor: Colors.black,
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.add_shopping_cart),
+                            label: const Text('Add to Cart', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black,
                               foregroundColor: Colors.white,
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
-                            child: const Text('Add to Cart'),
                           ),
                         ),
                       ],
@@ -141,26 +147,14 @@ class BookDetailScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
-
-              const Text(
-                'Description:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 32),
+              const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
               Text(
-                book.description.isNotEmpty
-                    ? book.description
-                    : 'No description available for this title yet.',
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.4,
-                ),
+                book.description.isNotEmpty ? book.description : 'No description available yet.',
+                style: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -168,20 +162,12 @@ class BookDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoLine({required String label, required String value}) {
+  Widget _infoLine(String label, String value) {
     return RichText(
       text: TextSpan(
-        style: const TextStyle(
-          fontSize: 14,
-          color: Colors.black,
-        ),
+        style: const TextStyle(fontSize: 15, color: Colors.black87),
         children: [
-          TextSpan(
-            text: '$label : ',
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          TextSpan(text: '$label: ', style: const TextStyle(fontWeight: FontWeight.w600)),
           TextSpan(text: value),
         ],
       ),
