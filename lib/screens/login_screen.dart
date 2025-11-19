@@ -36,6 +36,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // final snapshot = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(cred.user!.uid)
+  //         .get();
+
+  //     final role = snapshot.data()?['role'] ?? 'user';
+
+
   void _showForgotPasswordDialog() {
     final emailCtrl = TextEditingController();
     final dialogKey = GlobalKey<FormState>();
