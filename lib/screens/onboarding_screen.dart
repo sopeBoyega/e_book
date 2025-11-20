@@ -1,6 +1,6 @@
+import 'package:e_book/screens/login_screen.dart';
+import 'package:e_book/screens/register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
 import '../utils/constants.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -51,13 +51,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 flex: 3,
                 child: Stack(
                   children: [
-                    // Full collage
                     Image.asset(
                       'assets/images/onboarding_books.jpg',
                       width: double.infinity,
                       fit: BoxFit.contain,
                     ),
-
                     Positioned(
                       top: screenHeight * 0.35,
                       left: 0,
@@ -79,16 +77,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               const SizedBox(height: 40),
               const Text(
                 'Read more and stress less with our online book shopping app. '
-                'Shop from anywhere you are and discover titles that you love. '
-                'Happy reading!',
+                    'Shop from anywhere you are and discover titles that you love. '
+                    'Happy reading!',
                 style: AppTextStyles.body,
                 textAlign: TextAlign.center,
               ),
 
               const SizedBox(height: 48),
 
+              // GET STARTED → Register
               ElevatedButton(
-                onPressed: () => context.go('/login'),
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (ctx) => const RegisterScreen()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   minimumSize: const Size(double.infinity, 56),
@@ -101,9 +104,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
               const SizedBox(height: 16),
 
+              // LOGIN → Login
               TextButton(
-                onPressed: () => context.go('/register'),
-                child: const Text('Register', style: AppTextStyles.link),
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (ctx) => const LoginScreen()),
+                  );
+                },
+                child: const Text('Login', style: AppTextStyles.link),
               ),
             ],
           ),

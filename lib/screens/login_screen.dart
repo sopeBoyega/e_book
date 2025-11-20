@@ -43,10 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
         _loading = true;
       });
       final userCredentials = await _firebase.signInWithEmailAndPassword(
-        email: _usernameCtrl.text,
-        password: _passCtrl.text,
+        email: _usernameCtrl.text.trim(),
+        password: _passCtrl.text.trim(),
       );
-      Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => MainShell()));
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (ctx) => const MainShell()),
+          (route) => false,
+      );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -210,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     _loading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
-                          'Get Started',
+                          'Sign In',
                           style: AppTextStyles.button,
                         ),
               ),

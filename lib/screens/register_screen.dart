@@ -32,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final isValid = _formKey.currentState!.validate();
 
     if (!isValid) {
-      // show erro message
+      // show error message
       return;
     }
 
@@ -42,19 +42,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final userCredentials = await _firebase.createUserWithEmailAndPassword(
         email: _emailCtrl.text,
         password: _passCtrl.text,
-      ); 
+      );
 
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredentials.user!.uid)
           .set({
-            'username': _userCtrl,
-            'email': _emailCtrl,
-          });
+        'name': _userCtrl.text.trim(),      // what your screens expect
+        'email': _emailCtrl.text.trim(),
+        'photoUrl': '',                     // your profile screen expects this
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
 
       Navigator.of(
         context,
-      ).push(MaterialPageRoute(builder: (ctx) => MainShell()));
+      ).pushAndRemoveUntil(MaterialPageRoute(builder: (ctx) => MainShell()),
+          (route) => false,
+      );
     } catch (e) {
       setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
       Fluttertoast.showToast(msg: _error!);
