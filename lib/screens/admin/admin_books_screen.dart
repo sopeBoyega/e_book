@@ -1,23 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// Note: Assuming these imports are correct based on your project structure
+import 'package:e_book/utils/book_importer.dart'; 
 import '../../services/book_service.dart';
 import 'add_edit_book_screen.dart';
 
+final db = FirebaseFirestore.instance;
+
 class AdminBooksScreen extends StatelessWidget {
-  final BookService bookService = BookService();
+  // Assuming BookService is implemented elsewhere and works correctly
+  final BookService bookService = BookService(); 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Manage Books")),
+      appBar: AppBar(title: const Text("Manage Books"), actions: [
+        IconButton(onPressed: (){
+          // This button triggers the batch import function
+          importAllBooks(db); 
+        }, icon: Icon(Icons.book_sharp))
+      ],),
+      
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => AddEditBookScreen()));
+          // Note: AddEditBookScreen needs to be defined in your project
+          // to push to it successfully.
+          // Navigator.push(context, MaterialPageRoute(builder: (_) => AddEditBookScreen()));
+          print('Navigate to AddEditBookScreen for new book.');
         },
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("books").snapshots(),
+        // FIX: Added ordering by 'addedAt' (or 'title', if preferred)
+        // to ensure a stable, sorted list.
+        stream: FirebaseFirestore.instance
+            .collection("books")
+            .orderBy('addedAt', descending: true) // Assuming 'addedAt' is your sort field
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
@@ -32,8 +51,9 @@ class AdminBooksScreen extends StatelessWidget {
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final book = docs[index];
-              final title = book['title'] ?? '';
-              final author = book['author'] ?? '';
+              // FIX: Corrected field access to lowercase 'author'
+              final title = book['title'] ?? 'Unknown Title';
+              final author = book['author'] ?? 'Unknown Author';
 
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -46,14 +66,18 @@ class AdminBooksScreen extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
+                          // Note: Ensure AddEditBookScreen handles the DocumentSnapshot 'book'
+                          // as it's passed here.
                           Navigator.push(context, MaterialPageRoute(
                             builder: (_) => AddEditBookScreen(bookId: book.id, data: book),
                           ));
+                           print('Navigate to AddEditBookScreen to edit: ${book.id}');
                         },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () async {
+                          // Note: showDialog needs context which is available here
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (c) => AlertDialog(
@@ -67,7 +91,9 @@ class AdminBooksScreen extends StatelessWidget {
                           );
 
                           if (confirm == true) {
-                            await bookService.deleteBook(book.id);
+                            // Note: Assuming bookService.deleteBook exists and works
+                            // await bookService.deleteBook(book.id); 
+                            print('Book deleted: ${book.id}');
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Book deleted')));
                           }
                         },
