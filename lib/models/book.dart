@@ -3,12 +3,12 @@ class Book {
   final String title;
   final String author;
   final String category;
-  final String price; // keep as String for now
+  final String price;
   final String imagePath;
 
-  // New fields for details
+  // Rating & Description
   final double rating;
-  final String description;   // long text
+  final String description;
 
   const Book({
     required this.id,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/book.dart';
 
 class HomeBestDealsCarousel extends StatefulWidget {
-  final List<Book> books;
-  final ValueChanged<Book> onBookTap;
+  final List<Book> books; //books shown on the carousel
+  final ValueChanged<Book> onBookTap; //for tapping and getting to the book.detais screen
 
   const HomeBestDealsCarousel({
     super.key,
@@ -32,7 +32,7 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
     });
   }
 
-  @override
+  @override //clean up controller when the widget destroys so no resource leaks
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -51,13 +51,13 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index];
-              final isActive = index == _currentPage;
+              final isActive = index == _currentPage; // check if this page is the current one
 
               return AnimatedScale(
                 duration: const Duration(milliseconds: 250),
-                scale: isActive ? 1.0 : 0.96,
+                scale: isActive ? 1.0 : 0.96, // if card is currently active page then scale = 1.0 normal size, while 0.96 is 96% of the size, so slightly smaller.
                 child: GestureDetector(
-                  onTap: () => widget.onBookTap(book),
+                  onTap: () => widget.onBookTap(book), // when user taps this card, it calls openBookDetails(book) in HomeScreen, and navigates to BookDetailsScreen
                   child: _BestDealCard(book: book),
                 ),
               );
@@ -66,7 +66,7 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
         ),
         const SizedBox(height: 12),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center, //SECTION DEALS WITH PAGE DOTS / INDICATORS
           children: List.generate(books.length, (index) {
             final isActive = index == _currentPage;
             return Container(
@@ -90,6 +90,7 @@ class _BestDealCard extends StatelessWidget {
 
   const _BestDealCard({required this.book});
 
+  // for Discount
   @override
   Widget build(BuildContext context) {
     final double originalPrice = double.tryParse(book.price) ?? 0;
@@ -99,7 +100,7 @@ class _BestDealCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
@@ -112,8 +113,8 @@ class _BestDealCard extends StatelessWidget {
       child: Row(
         children: [
           // Book image
-          ClipRRect(
-            borderRadius: const BorderRadius.horizontal(
+          ClipRRect( //clipprect to round the corners
+             borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(20),
             ),
             child: AspectRatio(
@@ -127,7 +128,7 @@ class _BestDealCard extends StatelessWidget {
           // Info panel
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12), //for text inside
               decoration: const BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.horizontal(
@@ -152,8 +153,8 @@ class _BestDealCard extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2, // limits the height
+                    overflow: TextOverflow.ellipsis, //if there's still text left after the last visible character, show ....at the end
                   ),
                   const SizedBox(height: 4),
                   Text(

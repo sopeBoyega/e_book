@@ -20,7 +20,7 @@ class HorizontalBookList extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: books.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (context, index) { //Flutter calls this for each index and expects you to return a widget for that item.
           final book = books[index];
           return GestureDetector(
             onTap: () => onBookTap(book),
