@@ -1,15 +1,18 @@
+// lib/screens/book_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../models/book.dart';
+import '../providers/cart_provider.dart';
 import '../widgets/book_reviews_section.dart';
+import 'cart_screen.dart';
 
 class BookDetailScreen extends StatelessWidget {
   final Book book;
-  final bool isLoggedIn; // wire this to auth later
 
   const BookDetailScreen({
     super.key,
     required this.book,
-    this.isLoggedIn = true,
   });
 
   @override
@@ -26,28 +29,31 @@ class BookDetailScreen extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          book.category,
+          book.category.isNotEmpty ? book.category : 'Book',
           style: const TextStyle(
             color: Colors.black,
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            color: Colors.black,
-            onPressed: () {},
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: _CartIconButton(),
           ),
         ],
       ),
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Title
               Text(
                 book.title,
                 style: const TextStyle(
@@ -57,6 +63,7 @@ class BookDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
+              // Top row: cover + info
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -78,8 +85,9 @@ class BookDetailScreen extends StatelessWidget {
                       children: [
                         _infoLine(
                           label: 'Author',
-                          value:
-                          book.author.isNotEmpty ? book.author : 'Unknown',
+                          value: book.author.isNotEmpty
+                              ? book.author
+                              : 'Unknown',
                         ),
                         const SizedBox(height: 6),
                         _infoLine(
@@ -97,37 +105,20 @@ class BookDetailScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             const Text(
-                              'Pricing : ',
+                              'Price : ',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
-                              '\$${book.price}',
+                              book.priceFormatted,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              foregroundColor: Colors.white,
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            child: const Text('Add to Cart'),
-                          ),
                         ),
                       ],
                     ),
@@ -137,6 +128,7 @@ class BookDetailScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
+              // Description
               const Text(
                 'Description:',
                 style: TextStyle(
@@ -154,21 +146,67 @@ class BookDetailScreen extends StatelessWidget {
                   height: 1.4,
                 ),
               ),
+
               const SizedBox(height: 24),
 
+              // Reviews
               BookReviewsSection(
                 bookId: book.id,
-                isLoggedIn: isLoggedIn,
+                isLoggedIn: true,
               ),
               const SizedBox(height: 24),
             ],
           ),
         ),
       ),
+
+      // ADD TO CART BUTTON
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            height: 52,
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              onPressed: () {
+                final cart = context.read<CartProvider>();
+                cart.add(book);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '"${book.title}" added to cart',
+                    ),
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              child: const Text(
+                'Add to cart',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  static Widget _infoLine({required String label, required String value}) {
+  static Widget _infoLine({
+    required String label,
+    required String value,
+  }) {
     return RichText(
       text: TextSpan(
         style: const TextStyle(
@@ -185,6 +223,70 @@ class BookDetailScreen extends StatelessWidget {
           TextSpan(text: value),
         ],
       ),
+    );
+  }
+}
+
+/// Cart icon with badge in the AppBar
+class _CartIconButton extends StatelessWidget {
+  const _CartIconButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<CartProvider>(
+      builder: (context, cart, _) {
+        // Sum quantities of all items
+        final int totalItems = cart.items.fold<int>(
+          0,
+              (sum, item) => sum + item.quantity,
+        );
+
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CartScreen(),
+              ),
+            );
+          },
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.shopping_cart_outlined,
+                  color: Colors.black,
+                ),
+              ),
+              if (totalItems > 0)
+                Positioned(
+                  right: 2,
+                  top: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: Text(
+                      totalItems > 9 ? '9+' : totalItems.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

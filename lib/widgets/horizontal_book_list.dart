@@ -14,13 +14,17 @@ class HorizontalBookList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (books.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return SizedBox(
       height: 300,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: books.length,
-        itemBuilder: (context, index) { //Flutter calls this for each index and expects you to return a widget for that item.
+        itemBuilder: (context, index) {
           final book = books[index];
           return GestureDetector(
             onTap: () => onBookTap(book),

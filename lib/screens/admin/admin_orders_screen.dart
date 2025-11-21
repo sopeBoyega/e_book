@@ -43,7 +43,7 @@ class AdminOrdersScreen extends StatelessWidget {
               
               // Added safety checks for thumb and price, assuming they are direct fields.
               final thumb = data['thumbnail'] ?? '';
-              final price = data['price'] ?? 0.0; 
+              final price = data['total'] ?? 0.0;
 
               final status = data['status'] ?? 'pending';
               // FIX 3: Using the correct field 'date' instead of 'orderedAt'
@@ -82,7 +82,7 @@ class AdminOrdersScreen extends StatelessWidget {
                                 height: 60,
                                 width: 60,
                                 color: Colors.grey.shade300,
-                                child: const Icon(Icons.image_not_supported),
+                                child: const Icon(Icons.image),
                               ),
                         ),
                       ),

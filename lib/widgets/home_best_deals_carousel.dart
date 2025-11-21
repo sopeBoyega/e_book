@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/book.dart';
 
 class HomeBestDealsCarousel extends StatefulWidget {
-  final List<Book> books; //books shown on the carousel
-  final ValueChanged<Book> onBookTap; //for tapping and getting to the book.detais screen
+  final List<Book> books; // books shown on the carousel
+  final ValueChanged<Book> onBookTap; // tap -> go to details
 
   const HomeBestDealsCarousel({
     super.key,
@@ -32,7 +32,7 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
     });
   }
 
-  @override //clean up controller when the widget destroys so no resource leaks
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -41,6 +41,11 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
   @override
   Widget build(BuildContext context) {
     final books = widget.books;
+
+    // No deals, no carousel. Avoid big empty hole.
+    if (books.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       children: [
@@ -51,13 +56,13 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
             itemCount: books.length,
             itemBuilder: (context, index) {
               final book = books[index];
-              final isActive = index == _currentPage; // check if this page is the current one
+              final isActive = index == _currentPage;
 
               return AnimatedScale(
                 duration: const Duration(milliseconds: 250),
-                scale: isActive ? 1.0 : 0.96, // if card is currently active page then scale = 1.0 normal size, while 0.96 is 96% of the size, so slightly smaller.
+                scale: isActive ? 1.0 : 0.96,
                 child: GestureDetector(
-                  onTap: () => widget.onBookTap(book), // when user taps this card, it calls openBookDetails(book) in HomeScreen, and navigates to BookDetailsScreen
+                  onTap: () => widget.onBookTap(book),
                   child: _BestDealCard(book: book),
                 ),
               );
@@ -66,7 +71,7 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
         ),
         const SizedBox(height: 12),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center, //SECTION DEALS WITH PAGE DOTS / INDICATORS
+          mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(books.length, (index) {
             final isActive = index == _currentPage;
             return Container(
@@ -90,7 +95,6 @@ class _BestDealCard extends StatelessWidget {
 
   const _BestDealCard({required this.book});
 
-  // for Discount
   @override
   Widget build(BuildContext context) {
     final double originalPrice = double.tryParse(book.price) ?? 0;
@@ -113,8 +117,8 @@ class _BestDealCard extends StatelessWidget {
       child: Row(
         children: [
           // Book image
-          ClipRRect( //clipprect to round the corners
-             borderRadius: const BorderRadius.horizontal(
+          ClipRRect(
+            borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(20),
             ),
             child: AspectRatio(
@@ -128,7 +132,7 @@ class _BestDealCard extends StatelessWidget {
           // Info panel
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(12), //for text inside
+              padding: const EdgeInsets.all(12),
               decoration: const BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.horizontal(
@@ -153,8 +157,8 @@ class _BestDealCard extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
-                    maxLines: 2, // limits the height
-                    overflow: TextOverflow.ellipsis, //if there's still text left after the last visible character, show ....at the end
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
