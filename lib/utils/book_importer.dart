@@ -1,9 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// ----------------------------------------------------------------------
-// 1. BOOK MODEL (Provided by user)
-// ----------------------------------------------------------------------
-
 class Book {
   final String id;
   final String title;
@@ -30,8 +26,11 @@ class Book {
   bool operator ==(Object other) => 
       identical(this, other) || other is Book && runtimeType == other.runtimeType && id == other.id;
 
+  // “I override equality so that books with the same ID are treated as the same book. That way, when I put them in a Set, duplicates are removed automatically.”
   @override
   int get hashCode => id.hashCode;
+
+
 
   // Helper method to convert the Book object into a Firestore Map
   Map<String, dynamic> toFirestoreMap() {
@@ -302,11 +301,16 @@ class HomeData {
 
 /// Collects all unique books from HomeData and writes them to the 'books' 
 /// collection in Firestore using a Batch Write for efficiency.
+///
+///
+/// “This function imports all my sample books into Firestore. I use a Set to deduplicate them and a Firestore batch so I can write them all in one operation.”
 Future<void> importAllBooks(FirebaseFirestore db) async {
   final CollectionReference booksCollection = db.collection('books');
   final batch = db.batch();
   final Set<Book> uniqueBooks = {};
   int bookCount = 0;
+
+
 
   // 1. Collect all unique books from all lists
   for (final bookList in HomeData.allBookLists) {

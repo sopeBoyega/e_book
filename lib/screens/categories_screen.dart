@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import '../data/category_data.dart';
 import '../models/book.dart';
 import '../widgets/category_card.dart';
@@ -18,10 +20,49 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   String _searchQuery = '';
   BookFilter? _activeFilter;
 
+  List<Book> _allBooks = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _loadBooks();
+  }
+
+  Future<void> _loadBooks() async {
+    try {
+      final snapshot =
+      await FirebaseFirestore.instance.collection('books').get();
+
+      final books = snapshot.docs.map((doc) {
+        final data = doc.data();
+        // IMPORTANT: id first, then data
+        return Book.fromMap(doc.id, data);
+      }).toList();
+
+      setState(() {
+        _allBooks = books;
+        _isLoading = false;
+        _errorMessage = null;
+      });
+    } on FirebaseException catch (e, stack) {
+      debugPrint(
+          'Firestore error loading books (categories): ${e.code} – ${e.message}');
+      debugPrint(stack.toString());
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Firestore error: ${e.code}';
+      });
+    } catch (e, stack) {
+      debugPrint('Unknown error loading books (categories): $e');
+      debugPrint(stack.toString());
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load books from Firebase';
+      });
+    }
   }
 
   void _onSearchChanged() {
@@ -41,9 +82,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final query = _searchQuery.toLowerCase();
     final hasQuery = query.isNotEmpty;
 
-    final allBooks = CategoryData.booksByCategory.values
-        .expand((list) => list)
-        .toList();
+    final allBooks = _allBooks;
 
     return allBooks.where((book) {
       // text search
@@ -77,7 +116,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         }
 
         if (filter.maxPrice != null) {
-          final price = double.tryParse(book.price) ?? double.infinity;
+          final price = book.priceValue; // use helper from Book model
           if (price > filter.maxPrice!) {
             return false;
           }
@@ -91,8 +130,29 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     final categories = CategoryData.categories;
-    final hasActiveFilter =
-        _activeFilter != null && !_activeFilter!.isEmpty;
+
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF2F2F2),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF2F2F2),
+        body: Center(
+          child: Text(
+            _errorMessage!,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+      );
+    }
+
+    final hasActiveFilter = _activeFilter != null && !_activeFilter!.isEmpty;
     final isSearching = _searchQuery.isNotEmpty || hasActiveFilter;
     final results = isSearching ? _filteredBooks : <Book>[];
 
@@ -139,8 +199,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       ),
       itemBuilder: (context, index) {
         final category = categories[index];
-        final List<Book> books =
-            CategoryData.booksByCategory[category.name] ?? const <Book>[];
+
+        // Filter books from Firestore data by category name
+        final List<Book> books = _allBooks
+            .where((b) =>
+        b.category.toLowerCase() == category.name.toLowerCase())
+            .toList();
 
         return GestureDetector(
           onTap: () {
@@ -218,7 +282,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '\$${book.price}',
+                  book.priceFormatted,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -333,3 +397,5 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     }
   }
 }
+
+

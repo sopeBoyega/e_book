@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/book.dart';
 
 class HomeBestDealsCarousel extends StatefulWidget {
-  final List<Book> books;
-  final ValueChanged<Book> onBookTap;
+  final List<Book> books; // books shown on the carousel
+  final ValueChanged<Book> onBookTap; // tap -> go to details
 
   const HomeBestDealsCarousel({
     super.key,
@@ -41,6 +41,11 @@ class _HomeBestDealsCarouselState extends State<HomeBestDealsCarousel> {
   @override
   Widget build(BuildContext context) {
     final books = widget.books;
+
+    // No deals, no carousel. Avoid big empty hole.
+    if (books.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       children: [
@@ -99,7 +104,7 @@ class _BestDealCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.black,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(

@@ -14,15 +14,14 @@ class AppBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 8, bottom: 12),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF8F5FA), // light pink/grey background
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x22000000),
-            blurRadius: 6,
-            offset: Offset(0, -2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F2), // same as screen background
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey[300]!,
+            width: 1,
           ),
-        ],
+        ),
       ),
       child: Row(
         children: [
@@ -78,7 +77,10 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isSelected = index == currentIndex;
-    final Color iconColor = isSelected ? Colors.black : Colors.grey;
+
+    final Color bubbleColor = isSelected ? Colors.black : Colors.transparent;
+    final Color iconColor = isSelected ? Colors.white : Colors.black87;
+    final Color textColor = isSelected ? Colors.black : Colors.black54;
 
     return Expanded(
       child: GestureDetector(
@@ -91,7 +93,7 @@ class _NavItem extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? Colors.grey[300] : Colors.transparent,
+                color: bubbleColor, // black circle when selected
               ),
               child: Icon(
                 icon,
@@ -104,7 +106,8 @@ class _NavItem extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: iconColor,
+                color: textColor,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ],

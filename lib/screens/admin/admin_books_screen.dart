@@ -1,3 +1,4 @@
+import 'package:e_book/screens/admin/admin_orders_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // Note: Assuming these imports are correct based on your project structure
@@ -17,7 +18,7 @@ class AdminBooksScreen extends StatelessWidget {
       appBar: AppBar(title: const Text("Manage Books"), actions: [
         IconButton(onPressed: (){
           // This button triggers the batch import function
-          importAllBooks(db); 
+          Navigator.of(context).push(MaterialPageRoute(builder: (ctx) =>  AdminOrdersScreen()));
         }, icon: Icon(Icons.book_sharp))
       ],),
       

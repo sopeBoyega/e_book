@@ -14,6 +14,10 @@ class HorizontalBookList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (books.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return SizedBox(
       height: 300,
       child: ListView.builder(
