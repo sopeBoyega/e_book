@@ -1,9 +1,10 @@
+import 'package:e_book/screens/wishlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'edit_profile.dart';
 import 'orders_screen.dart';
-import 'settings_screen.dart';
+import 'wishlist_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -92,7 +93,7 @@ class AccountScreen extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                // Buttons Section
+                // BUTTONS
                 _AccountButton(
                   icon: Icons.person_outline,
                   label: "Edit Profile",
@@ -114,12 +115,12 @@ class AccountScreen extends StatelessWidget {
                   },
                 ),
                 _AccountButton(
-                  icon: Icons.settings_outlined,
-                  label: "Settings",
+                  icon: Icons.favorite_outline,
+                  label: "WishList",
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                      MaterialPageRoute(builder: (_) => const WishListScreen()),
                     );
                   },
                 ),
@@ -203,8 +204,3 @@ class _AccountButton extends StatelessWidget {
     );
   }
 }
-
-// Using this design, create:
-// 1. EditProfileScreen
-// 2. OrderScreen
-// 3. SettingsScreen
