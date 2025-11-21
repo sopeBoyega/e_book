@@ -1,4 +1,3 @@
-// lib/screens/edit_profile.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,8 +15,6 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _currentPasswordController = TextEditingController();
 
   bool loading = false;
   String? photoUrl;
@@ -45,9 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => loading = false);
   }
 
-  // ---------------------------------------------------------
-  // 📌 Pick Image From Gallery
-  // ---------------------------------------------------------
+  // PICK IMAGE
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? picked =
@@ -61,9 +56,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // ---------------------------------------------------------
-  // 📌 Upload Image to Firebase Storage
-  // ---------------------------------------------------------
+  // UPLOAD IMAGE
   Future<void> _uploadImage() async {
     setState(() => loading = true);
 
@@ -88,9 +81,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  // ---------------------------------------------------------
-  // 📌 Save Profile Changes (Name + Email + Password)
-  // ---------------------------------------------------------
+  // SAVE PROFILE CHANGES
   Future<void> saveChanges() async {
     setState(() => loading = true);
 
@@ -98,34 +89,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final uid = user.uid;
 
     try {
-      // Update name in Firestore
       await FirebaseFirestore.instance.collection("users").doc(uid).update({
         "name": _nameController.text.trim(),
         "email": _emailController.text.trim(),
       });
 
-      // Update Email (Firebase Auth 6.x)
       if (_emailController.text.trim() != user.email) {
         await user.verifyBeforeUpdateEmail(_emailController.text.trim());
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              "Verification email sent. Please confirm to update email.",
-            ),
+            content: Text("Verification email sent to update email."),
           ),
         );
-      }
-
-      // Update Password (requires reauth)
-      if (_newPasswordController.text.isNotEmpty &&
-          _currentPasswordController.text.isNotEmpty) {
-        final cred = EmailAuthProvider.credential(
-          email: user.email!,
-          password: _currentPasswordController.text.trim(),
-        );
-
-        await user.reauthenticateWithCredential(cred);
-        await user.updatePassword(_newPasswordController.text.trim());
       }
 
       Navigator.pop(context);
@@ -140,9 +115,81 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  // ---------------------------------------------------------
-  // 📌 UI
-  // ---------------------------------------------------------
+  // SHOW DIALOG FOR PASSWORD CHANGE
+  void _openPasswordDialog() {
+    final currentCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Change Password"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: currentCtrl,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: "Current Password",
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: newCtrl,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: "New Password",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await _changePassword(currentCtrl.text, newCtrl.text);
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // CHANGE PASSWORD FUNCTION
+  Future<void> _changePassword(String currentPass, String newPass) async {
+    setState(() => loading = true);
+
+    final user = FirebaseAuth.instance.currentUser!;
+
+    try {
+      final cred = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPass.trim(),
+      );
+
+      await user.reauthenticateWithCredential(cred);
+      await user.updatePassword(newPass.trim());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password updated successfully!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    } finally {
+      setState(() => loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -161,9 +208,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // ---------------------------------------------------------
-                // Profile Picture
-                // ---------------------------------------------------------
+                // PROFILE PIC
                 Center(
                   child: GestureDetector(
                     onTap: _pickImage,
@@ -174,7 +219,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           backgroundColor: Colors.grey.shade300,
                           backgroundImage: _selectedImage != null
                               ? FileImage(_selectedImage!)
-                              : (photoUrl != null && photoUrl!.isNotEmpty)
+                              : (photoUrl != null &&
+                              photoUrl!.isNotEmpty)
                               ? NetworkImage(photoUrl!)
                               : null,
                           child: (photoUrl == null ||
@@ -207,45 +253,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                 const SizedBox(height: 30),
 
-                // ---------------------------------------------------------
-                // Name Input
-                // ---------------------------------------------------------
+                // NAME
                 _inputField("Full Name", _nameController),
 
                 const SizedBox(height: 20),
 
-                // ---------------------------------------------------------
-                // Email Input
-                // ---------------------------------------------------------
-                _inputField("Email", _emailController,
-                    keyboard: TextInputType.emailAddress),
-
-                const SizedBox(height: 20),
-
-                // ---------------------------------------------------------
-                // Password Section
-                // ---------------------------------------------------------
-                const Text(
-                  "Change Password",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
+                // EMAIL
+                _inputField(
+                  "Email",
+                  _emailController,
+                  keyboard: TextInputType.emailAddress,
                 ),
-
-                const SizedBox(height: 12),
-
-                _inputField("Current Password",
-                    _currentPasswordController, obscure: true),
-
-                const SizedBox(height: 12),
-
-                _inputField("New Password", _newPasswordController,
-                    obscure: true),
 
                 const SizedBox(height: 30),
 
-                // ---------------------------------------------------------
-                // Save Button
-                // ---------------------------------------------------------
+                // CHANGE PASSWORD BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _openPasswordDialog,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: const Text("Change Password",
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // SAVE
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -253,9 +291,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
                     ),
                     child: const Text(
                       "Save Changes",
@@ -272,9 +307,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  // ---------------------------------------------------------
-  // 📌 Reusable Stylish Input Field
-  // ---------------------------------------------------------
   Widget _inputField(String label, TextEditingController controller,
       {bool obscure = false, TextInputType keyboard = TextInputType.text}) {
     return TextField(

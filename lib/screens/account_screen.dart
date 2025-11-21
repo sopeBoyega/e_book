@@ -13,20 +13,28 @@ class AccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
-    // If not logged in (Option A requires login)
     if (user == null) {
       return Scaffold(
+        backgroundColor: const Color(0xFFF2F2F2),
         body: Center(
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             onPressed: () => Navigator.pushNamed(context, '/login'),
-            child: const Text("Please Log In", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Please Log In",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
           ),
         ),
       );
     }
 
-    // Stream user data from Firestore
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -35,7 +43,10 @@ class AccountScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            backgroundColor: Color(0xFFF2F2F2),
+            body: Center(
+              child: CircularProgressIndicator(color: Colors.black),
+            ),
           );
         }
 
@@ -49,109 +60,138 @@ class AccountScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text(
               "Account",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: Colors.black,
+              ),
             ),
             backgroundColor: Colors.transparent,
             elevation: 0,
+            centerTitle: true,
+            iconTheme: const IconThemeData(color: Colors.black),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Dynamic Profile Photo
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.black,
-                  backgroundImage:
-                  photoUrl.isNotEmpty ? NetworkImage(photoUrl) : null,
-                  child: photoUrl.isEmpty
-                      ? const Icon(Icons.person, size: 60, color: Colors.white)
-                      : null,
-                ),
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight - 40),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // PROFILE PHOTO
+                        Center(
+                          child: CircleAvatar(
+                            radius: 55,
+                            backgroundColor: Colors.grey.shade200,
+                            backgroundImage: photoUrl.isNotEmpty
+                                ? NetworkImage(photoUrl)
+                                : null,
+                            child: photoUrl.isEmpty
+                                ? const Icon(Icons.person, size: 60, color: Colors.grey)
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
 
-                const SizedBox(height: 15),
+                        // NAME
+                        Text(
+                          name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
 
-                // Name
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                        // EMAIL
+                        Text(
+                          email,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
 
-                const SizedBox(height: 5),
+                        const SizedBox(height: 30),
 
-                // Email
-                Text(
-                  email,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                        // BUTTONS
+                        _AccountButton(
+                          icon: Icons.person_outline,
+                          label: "Edit Profile",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                            );
+                          },
+                        ),
+                        _AccountButton(
+                          icon: Icons.bookmark_outline,
+                          label: "Orders",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const OrdersScreen()),
+                            );
+                          },
+                        ),
+                        _AccountButton(
+                          icon: Icons.favorite_outline,
+                          label: "Wishlist",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const WishListScreen()),
+                            );
+                          },
+                        ),
 
-                const SizedBox(height: 30),
+                        const Spacer(),
 
-                // BUTTONS
-                _AccountButton(
-                  icon: Icons.person_outline,
-                  label: "Edit Profile",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
-                    );
-                  },
-                ),
-                _AccountButton(
-                  icon: Icons.bookmark_outline,
-                  label: "Orders",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const OrdersScreen()),
-                    );
-                  },
-                ),
-                _AccountButton(
-                  icon: Icons.favorite_outline,
-                  label: "WishList",
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const WishListScreen()),
-                    );
-                  },
-                ),
-
-                const Spacer(),
-
-                // LOG OUT BUTTON
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                        // LOG OUT BUTTON
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => const Center(
+                                  child: CircularProgressIndicator(color: Colors.black),
+                                ),
+                              );
+                              await FirebaseAuth.instance.signOut();
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              "Log Out",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: const Text(
-                      "Log Out",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
@@ -159,8 +199,8 @@ class AccountScreen extends StatelessWidget {
   }
 }
 
-// Reusable button widget
-class _AccountButton extends StatelessWidget {
+// REUSABLE BUTTON
+class _AccountButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -172,31 +212,47 @@ class _AccountButton extends StatelessWidget {
   });
 
   @override
+  State<_AccountButton> createState() => _AccountButtonState();
+}
+
+class _AccountButtonState extends State<_AccountButton> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
+      decoration: BoxDecoration(
+        color: _hovered ? Colors.grey.shade100 : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
+        ],
+      ),
+      child: InkWell(
+        onTap: widget.onTap,
+        borderRadius: BorderRadius.circular(12),
+        onHover: (hovering) => setState(() => _hovered = hovering),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           child: Row(
             children: [
-              Icon(icon, size: 22),
+              Icon(widget.icon, size: 22, color: Colors.black87),
               const SizedBox(width: 12),
               Text(
-                label,
+                widget.label,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const Spacer(),
-              const Icon(Icons.arrow_forward_ios, size: 16),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
             ],
           ),
         ),
